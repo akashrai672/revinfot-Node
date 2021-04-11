@@ -29,9 +29,17 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
-    classId: {
+    loginAs: {
+      type: String,
+      enum: ["parent", "child"],
+    },
+    couponId: {
       type: Schema.Types.ObjectId,
-      ref: "class",
+      ref: "coupons",
+      default: null,
+    },
+    point: {
+      type: Number,
       required: true,
     },
   },

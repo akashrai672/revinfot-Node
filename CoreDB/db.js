@@ -5,7 +5,7 @@ class abc {
   }
   db() {
     mongoose.connect(
-      "mongodb://localhost:27017/mobulus",
+      "mongodb://localhost:27017/revinfotech",
       { useNewUrlParser: true },
       () => {
         console.log("Database Connected.");

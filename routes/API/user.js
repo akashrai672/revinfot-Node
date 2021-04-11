@@ -15,6 +15,7 @@ router.post(
   userController.register
 );
 router.post("/login", userController.loginUser);
+router.get("/list", userController.list);
 router.post("/detail", userController.userDetail);
 router.post("/notification", userController.SendNotification);
 router.post("/callback", userController.callBackExample);

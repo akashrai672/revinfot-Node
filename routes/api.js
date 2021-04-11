@@ -1,7 +1,9 @@
 const express = require("express");
 const UserRoutes = require("./API/user");
-const classRoutes = require("./API/class");
+const ReferRoutes = require("./API/referAndEarn");
+const HolidayRoutes = require("./API/holiday");
 const router = express.Router();
 router.use("/user", UserRoutes);
-router.use("/class", classRoutes);
+router.use("/refer", ReferRoutes);
+router.use("/holiday", HolidayRoutes);
 module.exports = router;
