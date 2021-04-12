@@ -2,6 +2,7 @@ const exppress = require("express");
 const router = exppress.Router();
 const userController = require("../../controllers/user");
 const { body, validationResult } = require("express-validator");
+const passport = require("passport");
 router.post(
   "/register",
   //   body("name").isEmpty().withMessage("Enter Name"),
@@ -16,8 +17,9 @@ router.post(
 );
 router.post("/login", userController.loginUser);
 router.get("/list", userController.list);
-router.post("/detail", userController.userDetail);
-router.post("/notification", userController.SendNotification);
-router.post("/callback", userController.callBackExample);
-router.post("/pattern", userController.printPattern);
+router.post(
+  "/detail",
+  passport.authenticate("jwt", { session: false }),
+  userController.userDetail
+);
 module.exports = router;

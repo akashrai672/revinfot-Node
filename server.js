@@ -2,6 +2,7 @@ const { json } = require("express");
 const express = require("express");
 const ApiRoutes = require("./routes/api");
 const fileUpload = require("express-fileupload");
+const passport = require("passport");
 const app = express();
 const port = 3000;
 require("./CoreDB/db");
@@ -13,7 +14,8 @@ app.use(function (req, res, next) {
   );
   next();
 });
-
+app.use(passport.initialize());
+require("./middleware/check-authenticated")(passport);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(fileUpload());

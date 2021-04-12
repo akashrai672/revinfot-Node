@@ -42,6 +42,14 @@ const UserSchema = new Schema(
       type: Number,
       required: true,
     },
+    status: {
+      type: Boolean,
+      default: true,
+    },
+    deviceId: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,

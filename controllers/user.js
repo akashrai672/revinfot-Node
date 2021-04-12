@@ -93,6 +93,7 @@ module.exports = {
                 data: {
                   id: user._id,
                   email: user.email,
+                  deviceId: user.deviceId,
                 },
               },
               `${constants.jwtSecret}`,
@@ -117,61 +118,21 @@ module.exports = {
         return SendResponse(res, {}, "Internal Server Error", 500);
       });
   },
-  callBackExample: async (req, res) => {
-    try {
-      console.log("FirstLog");
-      setTimeout(() => {
-        console.log("Set Time OutCallBack");
-      }, 0);
-      console.log("ThirdLog");
-      console.log("FourthLog");
-      SendResponse(res, {}, "See Log For Call Back Example", 200);
-    } catch (err) {
-      console.log(err);
-      SendResponse(res, {}, "Internal Server Error", 500);
-    }
-  },
-  printPattern: async (req, res) => {
-    try {
-      let arr = [];
-      for (let index = 1; index <= Number(req.body.noOfTerm); index++) {
-        if (index == 1) {
-          arr.push(index);
-        } else {
-          console.log(arr.length);
-          arr.push(arr[arr.length - 1] + index);
-        }
-      }
-      SendResponse(res, arr, "Pattern", 200);
-    } catch (err) {
-      console.log(err);
-      SendResponse(res, {}, "Internal Server Error", 500);
-    }
-  },
+
+  //Passport Implementation
   userDetail: async (req, res) => {
     try {
-      let user = await userModel
-        .findOne({ _id: req.body.userId })
-        .populate("classId");
-      if (user) {
-        SendResponse(res, user, "Detail Of User", 200);
+      console.log(req.user);
+      if (req.user == "UnAuthorized") {
+        return SendResponse(
+          res,
+          Boom.badRequest("Already login in other device"),
+          0,
+          407
+        );
       } else {
-        SendResponse(res, {}, "Invalid UserId", 400);
+        SendResponse(res, req.user, "Detail Of User", 200);
       }
-    } catch (err) {
-      console.log(err);
-      SendResponse(res, {}, "Internal Server Error", 500);
-    }
-  },
-  SendNotification: async (req, res) => {
-    try {
-      // Send FCM notification to more than 1000 tokens node js
-      let userDeviceToken = [];
-      for (let i = 0; i < userDeviceToken.length; i += 1000) {
-        const token = userDeviceToken.slice(i, i + 1000);
-        await sendNotification(token);
-      }
-      SendResponse(res, {}, "Notification Send Please Check Code", 200);
     } catch (err) {
       console.log(err);
       SendResponse(res, {}, "Internal Server Error", 500);
@@ -221,6 +182,30 @@ module.exports = {
         .aggregate([
           {
             $match: params,
+          },
+          {
+            $lookup: {
+              from: "coupons",
+              let: { userId: "$_id" },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $eq: ["$createdBy", "$$userId"],
+                    },
+                  },
+                },
+                {
+                  $lookup: {
+                    from: "users",
+                    localField: "assignedTo",
+                    foreignField: "_id",
+                    as: "RedeemedUsers",
+                  },
+                },
+              ],
+              as: "coupons",
+            },
           },
           { $sort: sort },
           { $skip: skip },
